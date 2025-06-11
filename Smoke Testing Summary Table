@@ -1,0 +1,41 @@
+function getLength(layerName, fieldName, fieldValue){
+	var segments = FeatureSetByName($map, layerName,[fieldName,'SHAPE__Length'],false)
+	var sFilter = Filter(segments, fieldName +" = '" + fieldValue + "'")
+	var lengthMeters = Sum(sFilter,'SHAPE__Length')
+	var lengthFeet = lengthMeters * 3.28084
+	return Text(Round(lengthFeet), '#,###')
+}
+
+
+return { 
+	type : 'text', 
+	text : "<table style='border-collapse: collapse; width: 80%; margin: 20px; border: 1px solid #aaa; padding: 8px; text-align: left;'>" + 
+				 "<caption style = 'font-weight: bold; margin-bottom: 10px;'><strong>Smoke Testing Summary<strong></caption><thead><tr>" +
+         "<th style='border: 1px solid #aaa; padding: 8px; text-align: left; background-color: #f2f2f2;'>Smoke Status</th>" +
+         "<th style='border: 1px solid #aaa; padding: 8px; text-align: left; background-color: #f2f2f2;'>Length (ft)</th>" +
+      	 "</tr>" +
+    		 "</thead>" +
+		     "<tbody>" +
+      	 "<tr>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>Smoke Testing Complete</td>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>"+ getLength("Smoke Testing", 'smoke_status', 'Smoke Testing Complete') + "</td>" +
+      	 "</tr>" +
+      	 "<tr style='border: 1px solid #aaa; padding: 8px; text-align: left;'>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>Assistance Needed</td>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>"+ getLength("Smoke Testing", 'smoke_status', 'Assistance Needed') + "</td>" +
+      	"</tr>" +
+      	 "<tr style='border: 1px solid #aaa; padding: 8px; text-align: left;'>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>Not Authorized</td>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>"+ getLength("Smoke Testing", 'smoke_status', 'Not Authorized') + "</td>" +
+      	"</tr>" +
+      	 "<tr style='border: 1px solid #aaa; padding: 8px; text-align: left;'>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>Notified</td>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>"+ getLength("Smoke Testing", 'smoke_status', 'Notified') + "</td>" +
+      	"</tr>" +
+      	 "<tr style='border: 1px solid #aaa; padding: 8px; text-align: left;'>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>To Be Notified</td>" +
+        	"<td style='border: 1px solid #aaa; padding: 8px; text-align: left;'>"+ getLength("Smoke Testing", 'smoke_status', 'To Be Notified') + "</td>" +
+      	"</tr>" +
+    		"</tbody>" +
+  			"</table>"
+}
