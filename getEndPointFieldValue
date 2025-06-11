@@ -1,46 +1,55 @@
+// Function to get a field value from a nearby point feature 
+// at the start or end of a line feature
+
 function getEndPointFieldValue(pointLayerName, bufferDist, getFirst, fieldName) {
-    // Get point layer from the map
+    // Access the point layer by name and limit fields to the one we need
     var pointLayer = FeatureSetByName($map, pointLayerName, [fieldName], true)
 
     // Get geometry and paths of the line feature
     var geom = Geometry($feature)
-    var paths = geom.paths
+    var paths = geom["paths"]
 
-    // Return null if paths are empty
+    // If the line has no paths, return null
     if (Count(paths) == 0) {
         return null
     }
 
-    // Pick first or last path point
+    // Pick first or last path point based on input
     var path = paths[-1]
-    var endPoint = Point(path[-1])
+    var endPoint = path[-1]
     if(getFirst){
       path = paths[0]
-      endPoint = Point(path[0])
+      endPoint = path[0]
     }
 
-    // Create buffer for intersection
-    var endPointBuffer = Buffer(endPoint, bufferDist)
+    // Initialize variables to hold the closest match
+    var nearestValue = null
+    var minDistance = bufferDist
 
-    // Get intersecting points
-    var intersect = Intersects(pointLayer, endPointBuffer)
+    // Loop through all features in the point layer
+    for (var pt in pointLayer) {
+      var ptGeom = Geometry(pt)
+      var dist = Distance(ptGeom, endPoint)
 
-    // Return field value or null if none found
-    if(Count(intersect) > 0){
-      return First(intersect)[fieldName]
+      // If within buffer distance, and closer than previous, store the value
+      if (dist <= minDistance) {
+        nearestValue = pt[fieldName]
+        minDistance = dist
+      }
     }
-    else {
-      return null
-    }
+
+    // Return the nearest point’s field value or null if none were close enough
+    return nearestValue
 }
 
-// Example usage:
-// Get 'facility_id' at the first point of the line
-
-
+// ---------- Example Use ----------
+// Try to get the ID from the closest manhole point at the first vertex of a line
 var value = getEndPointFieldValue("Manhole Inspection Report", 0.5, true, "mh_structure_no")
+
+// If no nearby manhole found, try using the Structures layer instead
 if(IsEmpty(value)) {
   value = getEndPointFieldValue("Structures", 0.5, true, "facility_id")
 }
 
+// Return the value found (or null)
 return value
