@@ -1,0 +1,57 @@
+var portalAddress = 'https://gisportal.mckimcreed.com/portal'
+var itemID = ''
+
+function editSurveyButtonWeb(surveyID, buttonText, background, color) {
+    background = When(!IsEmpty(background), background, '#600ba5')
+    color = When(!IsEmpty(color), color, 'white')
+    var urlsource = 'https://survey123.arcgis.com/share/' + surveyID + '?';
+    var params = {
+      portalUrl: portalAddress,
+      mode: 'edit',
+      globalId: $feature.globalid,
+      version: 'latest',
+      encodeUrlParams: 'true'
+    }
+    var url = urlsource + UrlEncode(params)
+    var buttonHTML = "<p><a href='" + url + "' target='_blank' style='display: inline-block; padding: 10px; background-color: " + background + "; color: " + color + "; text-align: center; text-decoration: none; border-radius: 5px;'><strong>" + buttonText + "</strong></a></p>"
+    return buttonHTML
+}
+
+function editSurveyButtonApp(surveyID, buttonText, background, color) {
+    background = When(!IsEmpty(background), background, '#600ba5')
+    color = When(!IsEmpty(color), color, 'white')
+    var urlsource = 'https://survey123.arcgis.app?';
+    var params = {
+      itemID: surveyID,
+      portalUrl: portalAddress,
+      action: 'edit',
+      'q:globalId': $feature.globalid,
+      folder: '*',
+      update: 'true',
+      callback: 'https://fieldmaps.arcgis.app'
+    }
+    var url = urlsource + UrlEncode(params)
+    var buttonHTML = "<p><a href='" + url + "' target='_blank' style='display: inline-block; padding: 10px; background-color: " + background + "; color: " + color + "; text-align: center; text-decoration: none; border-radius: 5px;'><strong>" + buttonText + "</strong></a></p>"
+    return buttonHTML
+}
+
+function collectSurveyButtonApp(surveyID, buttonText, fieldList, background, color) {
+    background = When(!IsEmpty(background), background, '#600ba5')
+    color = When(!IsEmpty(color), color, 'white')
+    var urlsource = 'https://survey123.arcgis.app?';
+    var params = {
+      itemID: surveyID,
+      portalUrl: portalAddress,      
+      callback: 'https://fieldmaps.arcgis.app'
+    }
+    for (var i = 0; i < Count(fieldList); i += 2) {
+        var key = Text(fieldList[i])
+        var value = fieldList[i + 1]
+        params[key] = value
+    }
+    var url = urlsource + UrlEncode(params)
+    var buttonHTML = "<p><a href='" + url + "' target='_blank' style='display: inline-block; padding: 10px; background-color: " + background + "; color: " + color + "; text-align: center; text-decoration: none; border-radius: 5px;'><strong>" + buttonText + "</strong></a></p>"
+    return buttonHTML
+}
+
+return collectSurveyButtonApp('1234','Collect New Survey',['field1', 1, 'field2', 2])
