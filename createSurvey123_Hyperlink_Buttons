@@ -1,5 +1,5 @@
-var portalAddress = 'https://gisportal.mckimcreed.com/portal'
-var itemID = ''
+var portalAddress = ''  // Your portal address
+var itemID = ''  // Your survey item ID
 
 function editSurveyButtonWeb(surveyID, buttonText, background, color) {
     background = When(!IsEmpty(background), background, '#600ba5')
